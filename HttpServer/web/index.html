@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面任何其他内容都*必须*跟随其后！ -->
+    <link type="favicon" rel="shortcut icon" href="favicon.ico" />
+		<title>Boost 文档搜索</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+		<script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+		<style>
+			body {
+				padding-top: 60px;
+				background-color: #333;
+				height: 100%;
+			}
+			a:link {
+				text-decoration: none;
+			}
+			a:visited {
+				text-decoration: none;
+			}
+			a:hover{
+				text-decoration: none;
+			}
+			.item {
+				text-align: left;
+				padding-left: 50px;
+				padding-top: 20px;
+			}
+			.title {
+				font-size: 25px;
+			}
+			.desc {
+				color: #999999;
+				font-size: 20px;
+			}
+			.url {
+				color: #BDB76B;
+				font-size: 20px;
+			}
+			.search_btn {
+				margin: 8px 0;
+			}
+			.search_input {
+				padding-right: 5px;
+			}
+		</style>
+  </head>
+
+  <body>
+		<nav class="navbar navbar-inverse navbar-fixed-top" >
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/index.html">Boost文档搜索</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <form class="navbar-form navbar-left search_input" id="input" onsubmit="return false">
+            <input type="text" class="form-control" placeholder="输入关键字"  v-model="searchString">
+          </form>
+					<button class="btn btn-primary search_btn" id="submit">搜索</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid" id="output">
+      <div class="row" v-for="rs in results">
+        <!--这些行放搜索结果-->
+        <div class="col-sm-8 item">
+          <a v-bind:href="rs.url" target="_blank">
+          <div class="title">{{rs.title}}</div>
+          <div class="desc">{{rs.desc}}</div>
+          <div class="url">{{rs.url}}</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以跟据需要只加载单个插件。 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script>
+		$(document).ready(function(){
+				var input = new Vue({
+						el: '#input',
+						data: {
+								searchString: "",
+						},
+				});
+
+				var output = new Vue({
+						el: '#output',
+						data: {
+								results: [
+										// 对象形如:
+										// {
+										// 		"title": "What You Need To Know About CSS Variables",
+										// 		"url": "https://www.runoob.com/css/css-tutorial.html",
+										// 		"desc": "https://static.runoob.com/images/icon/css.png"
+										// },
+								]
+						},
+				})
+
+				$("#submit").click(function(){
+					var url = "/search?query=" + input.searchString;
+					htmlobj=$.ajax({url:url, async:false});
+					output.results = JSON.parse(htmlobj.responseText) || [];
+				});
+		});
+    </script>
+  </body>
+</html>
